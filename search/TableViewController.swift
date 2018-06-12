@@ -13,7 +13,7 @@ class TableViewController: UITableViewController , UISearchResultsUpdating{
 
     var filteredTableData = [String]()
     var resultSearchController = UISearchController()
-
+ 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.resultSearchController = ({
@@ -21,9 +21,11 @@ class TableViewController: UITableViewController , UISearchResultsUpdating{
             controller.searchResultsUpdater = self
             controller.dimsBackgroundDuringPresentation = false
             controller.searchBar.sizeToFit()
-//            controller.hidesNavigationBarDuringPresentation = true
-
-            self.tableView.tableHeaderView = controller.searchBar
+//            self.tableView.tableHeaderView = controller.searchBar
+//            controller.hidesNavigationBarDuringPresentation = false
+            tableView.tableHeaderView = controller.searchBar
+            // truyền sang mất nút search
+            definesPresentationContext = true
             return controller
         })()
         self.tableView.reloadData()
@@ -46,20 +48,21 @@ class TableViewController: UITableViewController , UISearchResultsUpdating{
         if (self.resultSearchController.isActive){
             return filteredTableData.count
         }
+
         else{
-            return tableData.count
+            return filteredTableData.count
         }
     }
 
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-
+// có thể tabledata
         if (self.resultSearchController.isActive){
             cell.textLabel?.text = filteredTableData[indexPath.row]
             return cell
         }else{
-            cell.textLabel?.text = tableData[indexPath.row]
+            cell.textLabel?.text = filteredTableData[indexPath.row]
             return cell
         }
 
@@ -107,14 +110,16 @@ class TableViewController: UITableViewController , UISearchResultsUpdating{
     }
     */
 
-    /*
+    
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+        let detailviewcontroller = segue.destination as? DetailViewController
+        if let index = tableView.indexPathForSelectedRow{
+           detailviewcontroller?.name = tableData[index.row]
+        }
     }
-    */
+    
 
 }
